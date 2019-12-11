@@ -69,7 +69,7 @@ def hdbscan_consensus_matrix(consensus_matrix, max_cluster_size, interval):
 
 PATH = r"C:\Users\Jakob\Documents\consensusClustering\experiment\datasets"
 FUNCTION_NAMES = [load_panceras_mouse, load_aml8k]
-DATASET_NAME = ["Panceras cells mouse 2016", "AML8K"]
+DATASET_NAME = ["panceras_cells_mouse", "AML8K"]
 
 for load_data, dataset_name in zip(FUNCTION_NAMES, DATASET_NAME):
 
@@ -85,6 +85,9 @@ for load_data, dataset_name in zip(FUNCTION_NAMES, DATASET_NAME):
     # clustering_algorithm = DBSCAN(min_samples = 3, eps = 0.3, metric = 'cosine')
     consensus_clustering = ConsensusClustering(clustering_algorithm, 100)
     consensus_matrix = consensus_clustering.cc_fit(norm_data, y)
+
+    file_name = dataset_name + "_matrix"
+    np.save("file_name", consensus_matrix)
 
     hdbscan_consensus_matrix(consensus_matrix, 70, 1)
 
