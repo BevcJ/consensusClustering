@@ -1,3 +1,4 @@
+import time
 import hdbscan
 import numpy as np
 
@@ -31,7 +32,11 @@ class ConsensusClustering:
         connectivity_matrix = np.zeros((n_samples, n_samples))
         indicator_matrix = np.zeros((n_samples, n_samples))
 
+        time_taken = 0
+        start_time = time.time()
         for iteration in range(self.n_iter):
+
+            start_time = time.time()
             
             resampled_ds, rows_list = bootstrap(X, n_samples)
             clustering = self.clustering_algorithm.fit(resampled_ds[:, 1:-1])
@@ -58,6 +63,11 @@ class ConsensusClustering:
                 print("Starting iteration: {}".format(iteration))
                 print("Adjusted rand score for this iteration: {}"
                         .format(rand_score))
+
+
+        end_time = time.time()
+
+        print("Time taken (average) for one iteration: {}".format((end_time - start_time) / self.n_iter))
 
         print("Average adj. rand index: {}".format(np.average(rand_scores)))
 
