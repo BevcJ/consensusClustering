@@ -37,21 +37,21 @@ class ConsensusClustering:
         for iteration in range(self.n_iter):
 
             start_time = time.time()
-            
-            resampled_ds, rows_list = bootstrap(X, n_samples)
+
+            resampled_ds, rows_list = bootstrap(X, int(0.8 * n_samples))
             clustering = self.clustering_algorithm.fit(resampled_ds[:, 1:-1])
             predicted_labels = clustering.labels_
-            
+
             # Make dictionary of Original indices of data for correct matrix operation
             idx_original = resampled_ds[:, 0].astype(int)
             idx_current = range(0, n_samples)
             dict_original2resampled_idx = dict(zip(idx_original, idx_current))
-            
+
             # Assebmle matrices according to the article and sum them up at every iterations,
             # rather to store NUM_REPEATS in list and then sum up
             connectivity_matrix += conn_matrix(predicted_labels, rows_list, dict_original2resampled_idx, n_samples)
             indicator_matrix += indi_matrix(rows_list, n_samples)
-            
+
             # Evalutaion
             true_labels = resampled_ds[:,-1]
             predicted_labels = clustering.labels_
