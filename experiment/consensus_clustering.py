@@ -36,8 +36,6 @@ class ConsensusClustering:
         start_time = time.time()
         for iteration in range(self.n_iter):
 
-            start_time = time.time()
-
             resampled_ds, rows_list = bootstrap(X, int(0.8 * n_samples))
             clustering = self.clustering_algorithm.fit(resampled_ds[:, 1:-1])
             predicted_labels = clustering.labels_
@@ -47,9 +45,11 @@ class ConsensusClustering:
             idx_current = range(0, n_samples)
             dict_original2resampled_idx = dict(zip(idx_original, idx_current))
 
-            # Assebmle matrices according to the article and sum them up at every iterations,
+            # Assebmle matrices according to the article and sum them up at every iteration,
             # rather to store NUM_REPEATS in list and then sum up
-            connectivity_matrix += conn_matrix(predicted_labels, rows_list, dict_original2resampled_idx, n_samples)
+            connectivity_matrix += conn_matrix(predicted_labels, rows_list,
+                                               dict_original2resampled_idx,
+                                               n_samples)
             indicator_matrix += indi_matrix(rows_list, n_samples)
 
             # Evalutaion
@@ -61,9 +61,7 @@ class ConsensusClustering:
 
             if False:
                 print("Starting iteration: {}".format(iteration))
-                print("Adjusted rand score for this iteration: {}"
-                        .format(rand_score))
-
+                print("Adjusted rand score for this iteration: {}".format(rand_score))
 
         end_time = time.time()
 
