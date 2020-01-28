@@ -1,6 +1,8 @@
 import pandas as pd
 import numpy as np
 
+from sklearn.preprocessing import normalize
+
 
 def load_panceras_mouse(PATH):
     dataframe = pd.read_csv(PATH + '\pancreas_cells_mouse_2016.tab',
@@ -14,8 +16,28 @@ def load_panceras_mouse(PATH):
     dataframe.drop(['class', 'assigned_cluster',
                     'barcode', 'level_0', 'source', 
                     'Selected'], axis=1, inplace=True)
+          
+    X = dataframe.values
+    X = normalize(X, norm='l2')
+
+    return X.astype(float), y
+
+
+def load_panceras_mouse_3000(PATH):
+    dataframe = pd.read_csv(PATH + '\Baron2016_panceras_cells_mouse_3000.tab',
+                            sep='\t', low_memory=False)
+    dataframe.drop([0, 1], inplace=True)
+
+    # Save true labels and drop than unneede columns
+    n_rows, n_columns = dataframe.shape
+    y = dataframe['assigned_cluster'].values.reshape(n_rows, 1)
+
+    dataframe.drop(['class', 'assigned_cluster',
+                    'barcode', 'level_0', 'source', 
+                    'Selected'], axis=1, inplace=True)
                
     X = dataframe.values
+    X = normalize(X, norm='l2')
 
     return X.astype(float), y
 
@@ -45,6 +67,38 @@ def load_panceras_human(PATH):
 
     dataframe.drop(['class', 'Selected', 'barcode',
                     'Cell ID', 'Batch ID', 'Patient'], axis=1, inplace=True)
+    X = dataframe.values
+    print("Original dataset shape: {}, {}".format(n_rows, n_columns))
+
+    return X, y
+
+
+def load_panceras_human_3000(PATH):
+    dataframe = pd.read_csv(PATH + '\Baron2016_panceras_cells_human_3000.tab',
+                            sep='\t', low_memory=False)
+    dataframe.drop([0, 1], inplace=True)
+
+    # Save true labels and drop than unneede columns
+    n_rows, n_columns = dataframe.shape
+    y = dataframe['class'].values.reshape(n_rows, 1)
+
+    dataframe.drop(['class', 'Selected', 'barcode',
+                    'Cell ID', 'Batch ID', 'Patient'], axis=1, inplace=True)
+    X = dataframe.values
+    print("Original dataset shape: {}, {}".format(n_rows, n_columns))
+
+    return X, y
+
+def load_mouse_retinal_3000(PATH):
+    dataframe = pd.read_csv(PATH + '\Shekar2016_mouse_retinal_bipolar_neurons_large_3000.tab',
+                            sep='\t', low_memory=False)
+    dataframe.drop([0, 1], inplace=True)
+
+    # Save true labels and drop than unneede columns
+    n_rows, n_columns = dataframe.shape
+    y = dataframe['Cluster ID'].values.reshape(n_rows, 1)
+
+    dataframe.drop(['Cluster ID', 'Selected', 'Cell ID'], axis = 1, inplace = True)
     X = dataframe.values
     print("Original dataset shape: {}, {}".format(n_rows, n_columns))
 

@@ -3,7 +3,7 @@ import hdbscan
 import numpy as np
 
 from sklearn.cluster import DBSCAN
-from sklearn.metrics import adjusted_rand_score
+from sklearn.metrics import adjusted_rand_score, pairwise_distances
 from utils import  bootstrap, conn_matrix, indi_matrix
 
 class ConsensusClustering:
@@ -36,8 +36,11 @@ class ConsensusClustering:
         start_time = time.time()
         for iteration in range(self.n_iter):
 
-            resampled_ds, rows_list = bootstrap(X, int(0.8 * n_samples))
-            clustering = self.clustering_algorithm.fit(resampled_ds[:, 1:-1])
+            resampled_ds, rows_list = bootstrap(X, int(0.9 * n_samples))
+            distance_matrix = pairwise_distances(resampled_ds[:, 1:-1], metric='cosine')
+            clustering = self.clustering_algorithm.fit(distance_matrix)
+
+            #clustering = self.clustering_algorithm.fit(resampled_ds[:, 1:-1])
             predicted_labels = clustering.labels_
 
             # Make dictionary of Original indices of data for correct matrix operation
@@ -58,6 +61,9 @@ class ConsensusClustering:
 
             rand_score = adjusted_rand_score(true_labels, predicted_labels)
             rand_scores.append(rand_score)
+            #print(rand_score)
+            if iteration % 25 == 0:
+                print("Done 25 iterations")
 
             if False:
                 print("Starting iteration: {}".format(iteration))
@@ -66,7 +72,7 @@ class ConsensusClustering:
         end_time = time.time()
 
         print("Time taken (average) for one iteration: {}".format((end_time - start_time) / self.n_iter))
-
+        print("Total time taken in minutes: {}".format((end_time - start_time) / 60))
         print("Average adj. rand index: {}".format(np.average(rand_scores)))
 
         # Calculate conesnsus matirx based on equation (2) from article
